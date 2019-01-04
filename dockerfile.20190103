@@ -1,0 +1,26 @@
+FROM ranmufei/phpenv-mssqrv-mysql-oracle:video
+MAINTAINER ranmufei <ranmufei@qq.com>
+
+# installing required stuff
+#RUN apt-get update \
+#    && apt-get install -y vim unzip libaio-dev libmcrypt-dev git \
+#    && apt-get clean -y
+
+# workdir
+
+WORKDIR /var/www/
+
+ADD ./000-default.conf /etc/apache2/sites-enabled/
+
+RUN a2enmod rewrite
+# download 
+# claer
+
+RUN rm /var/www/ -rvf
+RUN cd /var/www/ && mkdir public && cd public && echo "hi ran!" > index.html
+# PHP extensions
+# install php
+
+#RUN echo '\r\nextension=oci8.so' >> /etc/php/7.0/apache2/php.ini
+#RUN rm -rvf /tmp/*
+#RUN sed -i 's/html/public/g' /etc/apache2/sites-enabled/000-default.conf

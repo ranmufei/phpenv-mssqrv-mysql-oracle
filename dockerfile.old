@@ -1,0 +1,38 @@
+FROM ranmufei/phpenv-mssqrv-mysql-oracle:v6
+MAINTAINER ranmufei <ranmufei@qq.com>
+
+# installing required stuff
+#RUN apt-get update \
+#    && apt-get install -y vim unzip libaio-dev libmcrypt-dev git \
+#    && apt-get clean -y
+
+
+# download 
+
+ADD  ./* /var/www/html/ 
+
+RUN cd /var/www/html/ && cp ext_skel /usr/include/php/20151012/ext/ && cp ./skeleton/ /usr/include/php/20151012/ext/  
+
+RUN cd /usr/include/php/20151012/ext/ && ./ext_skel --extname=my_dynamic --extname=dh_nvr
+
+RUN cd /var/www/html/ && cp ./my_dynamic/* /usr/include/php/20151012/ext/my_dynamic/ \
+&& cp ./dh_nvr/* /usr/include/php/20151012/ext/dh_nvr/ \
+&& cp ./lib/* /usr/lib/
+
+RUN cd /usr/include/php/20151012/ext/my_dynamic/ && /usr/bin/phpize && ./configure --with-php-config=/usr/bin/php-config \
+&& make && make install
+
+RUN cd /usr/include/php/20151012/ext/dh_nvr/ && /usr/bin/phpize && ./configure --with-php-config=/usr/bin/php-config \
+&& make && make install
+
+RUN echo '\r\nextension=my_dynamic.so' >> /etc/php/7.0/apache2/php.ini
+RUN echo '\r\nextension=dh_nvr.so' >> /etc/php/7.0/apache2/php.ini
+ 
+
+
+# PHP extensions
+# install php
+
+#RUN echo '\r\nextension=oci8.so' >> /etc/php/7.0/apache2/php.ini
+#RUN rm -rvf /tmp/*
+#RUN sed -i 's/html/public/g' /etc/apache2/sites-enabled/000-default.conf
